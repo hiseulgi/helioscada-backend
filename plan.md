@@ -77,8 +77,8 @@ Dokumen ini berisi langkah-langkah teknis mikro dari `issue.md` agar dapat dieks
 - [x] Gunakan `StreamingResponse` FastAPI untuk menyalurkan *CSV generator* berdasarkan query tanggal.
 
 ### Step 4.5: Registrasi App
-- [ ] Buat file *main entrypoint*: `src/backend/app/main.py`.
-- [ ] Registrasikan seluruh router yang telah dibuat ke instance *FastAPI application*.
+- [x] Buat file *main entrypoint*: `src/backend/app/main.py`.
+- [x] Registrasikan seluruh router yang telah dibuat ke instance *FastAPI application*.
 
 ---
 

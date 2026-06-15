@@ -13,6 +13,7 @@ COPY src ./src
 
 # Ensure the virtualenv path is in the environment
 ENV PATH="/app/.venv/bin:$PATH"
+ENV PYTHONPATH="/app"
 ENV PYTHONUNBUFFERED=1
 
 # Default port (FastAPI)
