@@ -15,9 +15,9 @@ Dokumen ini berisi langkah-langkah teknis mikro dari `issue.md` agar dapat dieks
 - [x] Buat file `.env.example` yang mencakup variabel: `DATABASE_URL`, `MQTT_BROKER`, `MQTT_PORT`, dll.
 
 ### Step 1.3: Setup Docker & External Services
-- [ ] Buat file konfigurasi broker MQTT: `mosquitto.conf` (izinkan koneksi anonim untuk keperluan lab lokal).
-- [ ] Buat `docker-compose.yml` yang berisi *services*: `db` (PostgreSQL), `mosquitto` (Eclipse Mosquitto).
-- [ ] Tambahkan konfigurasi `api` dan `bridge` ke dalam `docker-compose.yml` (menggunakan `Dockerfile` atau run command lokal untuk dev).
+- [x] Buat file konfigurasi broker MQTT: `mosquitto.conf` (izinkan koneksi anonim untuk keperluan lab lokal).
+- [x] Buat `docker-compose.yml` yang berisi *services*: `db` (PostgreSQL), `mosquitto` (Eclipse Mosquitto).
+- [x] Tambahkan konfigurasi `api` dan `bridge` ke dalam `docker-compose.yml` (menggunakan `Dockerfile` atau run command lokal untuk dev).
 
 ---
 
