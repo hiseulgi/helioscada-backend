@@ -44,14 +44,14 @@ Dokumen ini berisi langkah-langkah teknis mikro dari `issue.md` agar dapat dieks
 ## Tahap 3: Pembuatan Pydantic Schemas (Kontrak API)
 
 ### Step 3.1: Schema Health Check & Komponen Dasar
-- [ ] Buat file `src/backend/app/schemas/health.py` untuk schema respons Health Check.
-- [ ] Buat file `src/backend/app/schemas/telemetry.py`.
-- [ ] Definisikan nested schema: `PVData`, `BatteryData`, `InverterData`, `RelayData`.
+- [x] Buat file `src/backend/app/schemas/health.py` untuk schema respons Health Check.
+- [x] Buat file `src/backend/app/schemas/telemetry.py`.
+- [x] Definisikan nested schema: `PVData`, `BatteryData`, `InverterData`, `RelayData`.
 
 ### Step 3.2: Schema Input & Output Telemetri
-- [ ] Definisikan schema validasi `TelemetryLogCreate` (untuk payload MQTT masuk).
-- [ ] Definisikan schema respons serialisasi `TelemetryLogResponse`.
-- [ ] Definisikan schema untuk *dynamic filtering* yang opsional memuat subset data komponen berdasarkan argumen *query*.
+- [x] Definisikan schema validasi `TelemetryLogCreate` (untuk payload MQTT masuk).
+- [x] Definisikan schema respons serialisasi `TelemetryLogResponse`.
+- [x] Definisikan schema untuk *dynamic filtering* yang opsional memuat subset data komponen berdasarkan argumen *query*.
 
 ---
 
