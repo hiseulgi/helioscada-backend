@@ -106,34 +106,34 @@ Dokumen ini berisi langkah-langkah teknis mikro dari `issue.md` agar dapat dieks
 - [x] Tulis logika *dummy loop* yang menerbitkan payload MQTT tiruan secara berkala untuk simulasi kit PV.
 
 ### Step 6.2: Verifikasi Fungsionalitas Menyeluruh
-- [ ] *Up* seluruh layanan dengan perintah `docker compose up`.
-- [ ] Jalankan skrip *dummy publisher* untuk mensimulasikan aliran data.
-- [ ] Validasi *insertion* ke tabel PostgreSQL (apakah data masuk sesuai jumlah publish).
-- [ ] Verifikasi ketersediaan dan akurasi file *export* via panggilan HTTP/curl ke endpoint CSV.
+- [x] *Up* seluruh layanan dengan perintah `docker compose up`.
+- [x] Jalankan skrip *dummy publisher* untuk mensimulasikan aliran data.
+- [x] Validasi *insertion* ke tabel PostgreSQL (apakah data masuk sesuai jumlah publish).
+- [x] Verifikasi ketersediaan dan akurasi file *export* via panggilan HTTP/curl ke endpoint CSV.
 
 ### Step 6.3: Unit Testing (pytest)
-- [ ] Tambahkan dependensi testing (`pytest`, `pytest-asyncio`, `pytest-cov`, `httpx`) via `uv`.
-- [ ] Buat file konfigurasi testing (update `pyproject.toml` dengan konfigurasi pytest & coverage).
-- [ ] Buat file `tests/conftest.py` untuk mendefinisikan *fixtures*:
-  - [ ] `db_session`: In-memory SQLite asinkron yang selalu bersih di tiap *function scope*.
-  - [ ] `test_client`: `httpx.AsyncClient` dengan *dependency override* untuk `get_db`.
-- [ ] Buat `tests/test_api_health.py` (Pengujian Endpoint `/health`):
-  - [ ] *Success*: Database terhubung -> respons `200 OK`, `status: healthy`, `database: connected`.
-  - [ ] *Failure*: Database putus (mocking `db.execute` exception) -> respons `503 Service Unavailable`, `status: unhealthy`, `database: disconnected`.
-- [ ] Buat `tests/test_api_telemetry_post.py` (Pengujian Endpoint `POST /api/v1/telemetry`):
-  - [ ] *Success*: Payload JSON valid lengkap -> tersimpan ke DB, respons `201 Created` dengan `id`.
-  - [ ] *Success*: Payload JSON valid tanpa `timestamp` -> tersimpan dengan *default timestamp* server, respons `201 Created`.
-  - [ ] *Failure*: Payload cacat (misal tipe data salah atau format JSON rusak) -> respons `422 Unprocessable Entity`.
-  - [ ] *Failure*: Komponen wajib hilang (misal tidak ada objek `pv` di payload) -> respons `422 Unprocessable Entity`.
-- [ ] Buat `tests/test_api_telemetry_get.py` (Pengujian Endpoint `GET /api/v1/telemetry`):
-  - [ ] *Success*: Query rentang waktu valid -> mengembalikan daftar telemetri terurut kronologis sesuai jumlah yang disisipkan.
-  - [ ] *Success*: Uji *Dynamic Component Filtering* (`component="pv"`) -> respons JSON HANYA memuat kolom `timestamp` dan `pv` (kolom lain hilang/ter-*exclude*).
-  - [ ] *Success*: Uji *Downsampling* algoritma -> saat record melebih batas `downsample_limit=5`, pastikan respons dipotong rapi menjadi maksimal 5 elemen berjarak.
-  - [ ] *Failure*: Memanggil tanpa query params `start_time`/`end_time` -> respons `422 Unprocessable Entity`.
-- [ ] Buat `tests/test_api_telemetry_export.py` (Pengujian Endpoint `GET /api/v1/telemetry/export`):
-  - [ ] *Success*: Mengembalikan *StreamingResponse* berupa CSV -> verifikasi `Content-Type: text/csv`, header kolom tepat, tipe bool menjadi `TRUE`/`FALSE`.
-  - [ ] *Failure*: Parameter waktu tidak ada -> respons `422 Unprocessable Entity`.
-- [ ] Jalankan pengujian `pytest --cov=src` dan hasilkan laporan cakupan kode (target coverage min. 80%).
+- [x] Tambahkan dependensi testing (`pytest`, `pytest-asyncio`, `pytest-cov`, `httpx`) via `uv`.
+- [x] Buat file konfigurasi testing (update `pyproject.toml` dengan konfigurasi pytest & coverage).
+- [x] Buat file `tests/conftest.py` untuk mendefinisikan *fixtures*:
+  - [x] `db_session`: In-memory SQLite asinkron yang selalu bersih di tiap *function scope*.
+  - [x] `test_client`: `httpx.AsyncClient` dengan *dependency override* untuk `get_db`.
+- [x] Buat `tests/test_api_health.py` (Pengujian Endpoint `/health`):
+  - [x] *Success*: Database terhubung -> respons `200 OK`, `status: healthy`, `database: connected`.
+  - [x] *Failure*: Database putus (mocking `db.execute` exception) -> respons `503 Service Unavailable`, `status: unhealthy`, `database: disconnected`.
+- [x] Buat `tests/test_api_telemetry_post.py` (Pengujian Endpoint `POST /api/v1/telemetry`):
+  - [x] *Success*: Payload JSON valid lengkap -> tersimpan ke DB, respons `201 Created` dengan `id`.
+  - [x] *Success*: Payload JSON valid tanpa `timestamp` -> tersimpan dengan *default timestamp* server, respons `201 Created`.
+  - [x] *Failure*: Payload cacat (misal tipe data salah atau format JSON rusak) -> respons `422 Unprocessable Entity`.
+  - [x] *Failure*: Komponen wajib hilang (misal tidak ada objek `pv` di payload) -> respons `422 Unprocessable Entity`.
+- [x] Buat `tests/test_api_telemetry_get.py` (Pengujian Endpoint `GET /api/v1/telemetry`):
+  - [x] *Success*: Query rentang waktu valid -> mengembalikan daftar telemetri terurut kronologis sesuai jumlah yang disisipkan.
+  - [x] *Success*: Uji *Dynamic Component Filtering* (`component="pv"`) -> respons JSON HANYA memuat kolom `timestamp` dan `pv` (kolom lain hilang/ter-*exclude*).
+  - [x] *Success*: Uji *Downsampling* algoritma -> saat record melebih batas `downsample_limit=5`, pastikan respons dipotong rapi menjadi maksimal 5 elemen berjarak.
+  - [x] *Failure*: Memanggil tanpa query params `start_time`/`end_time` -> respons `422 Unprocessable Entity`.
+- [x] Buat `tests/test_api_telemetry_export.py` (Pengujian Endpoint `GET /api/v1/telemetry/export`):
+  - [x] *Success*: Mengembalikan *StreamingResponse* berupa CSV -> verifikasi `Content-Type: text/csv`, header kolom tepat, tipe bool menjadi `TRUE`/`FALSE`.
+  - [x] *Failure*: Parameter waktu tidak ada -> respons `422 Unprocessable Entity`.
+- [x] Jalankan pengujian `pytest --cov=src` dan hasilkan laporan cakupan kode (target coverage min. 80%).
 
 ### Step 6.4: Dokumentasi
 - [ ] Perbarui `README.md` repositori backend dengan panduan eksekusi `uv run` & `docker compose`.
