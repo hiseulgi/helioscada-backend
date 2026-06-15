@@ -136,4 +136,4 @@ Dokumen ini berisi langkah-langkah teknis mikro dari `issue.md` agar dapat dieks
 - [x] Jalankan pengujian `pytest --cov=src` dan hasilkan laporan cakupan kode (target coverage min. 80%).
 
 ### Step 6.4: Dokumentasi
-- [ ] Perbarui `README.md` repositori backend dengan panduan eksekusi `uv run` & `docker compose`.
+- [x] Perbarui `README.md` repositori backend dengan panduan eksekusi `uv run` & `docker compose`.
