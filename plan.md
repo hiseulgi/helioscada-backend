@@ -58,9 +58,9 @@ Dokumen ini berisi langkah-langkah teknis mikro dari `issue.md` agar dapat dieks
 ## Tahap 4: Pengembangan API Endpoints & Logic
 
 ### Step 4.1: Dependency Injection & Health Router
-- [ ] Buat file `src/backend/app/api/deps.py` yang berisi generator `get_db()` asinkron.
-- [ ] Buat file router: `src/backend/app/api/routers/health.py`.
-- [ ] Implementasikan endpoint `GET /health` untuk memverifikasi DB connection.
+- [x] Buat file `src/backend/app/api/deps.py` yang berisi generator `get_db()` asinkron.
+- [x] Buat file router: `src/backend/app/api/routers/health.py`.
+- [x] Implementasikan endpoint `GET /health` untuk memverifikasi DB connection.
 
 ### Step 4.2: Router Input Telemetri (POST)
 - [ ] Buat file router: `src/backend/app/api/routers/telemetry.py`.
