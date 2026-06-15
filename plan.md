@@ -63,9 +63,9 @@ Dokumen ini berisi langkah-langkah teknis mikro dari `issue.md` agar dapat dieks
 - [x] Implementasikan endpoint `GET /health` untuk memverifikasi DB connection.
 
 ### Step 4.2: Router Input Telemetri (POST)
-- [ ] Buat file router: `src/backend/app/api/routers/telemetry.py`.
-- [ ] Implementasikan endpoint `POST /api/v1/telemetry`.
-- [ ] Buat fungsi service di `src/backend/app/services/telemetry.py` untuk menangani insert log data baru ke database.
+- [x] Buat file router: `src/backend/app/api/routers/telemetry.py`.
+- [x] Implementasikan endpoint `POST /api/v1/telemetry`.
+- [x] Buat fungsi service di `src/backend/app/services/telemetry.py` untuk menangani insert log data baru ke database.
 
 ### Step 4.3: Router Historis Telemetri (GET & Downsampling)
 - [ ] Implementasikan logic `GET /api/v1/telemetry` di dalam file router telemetri.

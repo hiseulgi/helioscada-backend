@@ -87,6 +87,12 @@ class TelemetryLogResponse(BaseModel):
         )
 
 
+class TelemetryLogCreateResponse(BaseModel):
+    status: str
+    message: str
+    id: int
+
+
 class TelemetryListResponse(BaseModel):
     count: int
     data: list[TelemetryLogResponse]
