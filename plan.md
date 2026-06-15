@@ -5,9 +5,9 @@ Dokumen ini berisi langkah-langkah teknis mikro dari `issue.md` agar dapat dieks
 ## Tahap 1: Setup Proyek & Infrastruktur Dasar
 
 ### Step 1.1: Inisialisasi Struktur Proyek
-- [ ] Buat direktori utama: `src/backend/app`, `src/backend/bridge`, dan `tests`.
-- [ ] Jalankan inisialisasi *dependency manager* menggunakan `uv init` dengan target Python 3.13.
-- [ ] Buat struktur folder di dalam `app`: `api`, `core`, `db`, `models`, `schemas`, `services`.
+- [x] Buat direktori utama: `src/backend/app`, `src/backend/bridge`, dan `tests`.
+- [x] Jalankan inisialisasi *dependency manager* menggunakan `uv init` dengan target Python 3.13.
+- [x] Buat struktur folder di dalam `app`: `api`, `core`, `db`, `models`, `schemas`, `services`.
 
 ### Step 1.2: Instalasi Dependencies & Konfigurasi Environment
 - [ ] Konfigurasikan `pyproject.toml` dengan dependencies utama: `fastapi`, `uvicorn`, `sqlalchemy`, `asyncpg`, `pydantic-settings`, `pydantic`, `paho-mqtt`.
