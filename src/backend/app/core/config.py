@@ -13,11 +13,24 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = "HELIOSCADA Backend"
     API_V1_STR: str = "/api/v1"
 
-    # Database Configuration
-    # Example for async pg: postgresql+asyncpg://user:pass@host:port/dbname
-    DATABASE_URL: str = Field(
-        default="postgresql+asyncpg://postgres:postgres@localhost:5432/helioscada"
-    )
+    # API Binding and CORS
+    API_HOST: str = "0.0.0.0"
+    API_PORT: int = 8000
+    API_CORS: str = "*"
+
+    # Database Configuration (PostgreSQL)
+    DB_HOST: str = "localhost"
+    DB_PORT: int = 5432
+    DB_USER: str = "postgres"
+    DB_PASSWORD: str = "postgres"
+    DB_NAME: str = "helioscada"
+    DATABASE_URL: str | None = None
+
+    @property
+    def get_database_url(self) -> str:
+        if self.DATABASE_URL:
+            return self.DATABASE_URL
+        return f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
 
     # MQTT Configuration
     MQTT_BROKER: str = Field(default="localhost")

@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from src.backend.app.api.routers import health, telemetry
 from src.backend.app.db.init_db import init_db
+from src.backend.app.core.config import settings
 
 
 @asynccontextmanager
@@ -20,9 +21,11 @@ app = FastAPI(
 )
 
 # CORS middleware configuration (crucial for web clients and cross-origin mobile app dev testing)
+origins = [origin.strip() for origin in settings.API_CORS.split(",") if origin.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
