@@ -1,5 +1,7 @@
+import csv
+import io
 from datetime import datetime
-from typing import Sequence
+from typing import Sequence, AsyncGenerator
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.backend.app.models.telemetry import TelemetryLog
@@ -68,4 +70,64 @@ async def get_telemetry_history(
         
     downsampled_logs = [logs[i] for i in range(0, total_count, step)]
     return downsampled_logs[:downsample_limit]
+
+
+async def generate_telemetry_csv(
+    db: AsyncSession,
+    start_time: datetime,
+    end_time: datetime
+) -> AsyncGenerator[str, None]:
+    query = (
+        select(TelemetryLog)
+        .where(TelemetryLog.timestamp >= start_time)
+        .where(TelemetryLog.timestamp <= end_time)
+        .order_by(TelemetryLog.timestamp.asc())
+    )
+
+    headers = [
+        "Timestamp", "PV_Voltage", "PV_Current", "PV_Power", "PV_Temp",
+        "BAT_Voltage", "BAT_Current", "BAT_Power", "BAT_SoC", "BAT_SoC_Status", "BAT_Temp",
+        "INV_VoltageAC", "INV_CurrentAC", "INV_PowerAC", "INV_Eff",
+        "Relay_Fan", "Relay_Lamp"
+    ]
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(headers)
+    yield output.getvalue()
+    output.seek(0)
+    output.truncate(0)
+
+    # Use streaming to avoid loading large datasets into memory
+    result = await db.stream(query)
+    async for row in result:
+        log = row[0]
+        # Format Timestamp ISO format with Z suffix if UTC
+        ts_str = log.timestamp.isoformat()
+        if ts_str.endswith("+00:00"):
+            ts_str = ts_str[:-6] + "Z"
+        
+        writer.writerow([
+            ts_str,
+            f"{log.pv_voltage:.2f}",
+            f"{log.pv_current:.2f}",
+            f"{log.pv_power:.2f}",
+            f"{log.pv_temperature:.1f}",
+            f"{log.battery_voltage:.2f}",
+            f"{log.battery_current:.2f}",
+            f"{log.battery_power:.2f}",
+            f"{log.battery_soc:.2f}",
+            log.battery_soc_status,
+            f"{log.battery_temperature:.1f}",
+            f"{log.inverter_voltage_ac:.2f}",
+            f"{log.inverter_current_ac:.2f}",
+            f"{log.inverter_power_ac:.2f}",
+            f"{log.inverter_efficiency:.2f}",
+            "TRUE" if log.relay_fan else "FALSE",
+            "TRUE" if log.relay_lamp else "FALSE"
+        ])
+        yield output.getvalue()
+        output.seek(0)
+        output.truncate(0)
+
 

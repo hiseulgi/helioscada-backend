@@ -73,8 +73,8 @@ Dokumen ini berisi langkah-langkah teknis mikro dari `issue.md` agar dapat dieks
 - [x] Implementasikan logika algoritma kompresi data (*downsampling*) sederhana pada level *service* bila titik data melewati ambang batas.
 
 ### Step 4.4: Router Export Data (CSV)
-- [ ] Tambahkan logika endpoint `GET /api/v1/telemetry/export`.
-- [ ] Gunakan `StreamingResponse` FastAPI untuk menyalurkan *CSV generator* berdasarkan query tanggal.
+- [x] Tambahkan logika endpoint `GET /api/v1/telemetry/export`.
+- [x] Gunakan `StreamingResponse` FastAPI untuk menyalurkan *CSV generator* berdasarkan query tanggal.
 
 ### Step 4.5: Registrasi App
 - [ ] Buat file *main entrypoint*: `src/backend/app/main.py`.

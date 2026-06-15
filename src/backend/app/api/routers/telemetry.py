@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import Literal
 from fastapi import APIRouter, Depends, Query, status
+from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.backend.app.api.deps import get_db
 from src.backend.app.schemas.telemetry import (
@@ -64,4 +65,36 @@ async def read_telemetry_history(
         count=len(mapped_data),
         data=mapped_data
     )
+
+
+@router.get(
+    "/telemetry/export"
+)
+async def export_telemetry_csv(
+    *,
+    db: AsyncSession = Depends(get_db),
+    start_time: datetime = Query(..., description="Start of datetime range (ISO 8601)"),
+    end_time: datetime = Query(..., description="End of datetime range (ISO 8601)")
+) -> StreamingResponse:
+    # Use streaming to yield CSV rows dynamically
+    csv_generator = telemetry_service.generate_telemetry_csv(
+        db=db,
+        start_time=start_time,
+        end_time=end_time
+    )
+    
+    # Filename format: telemetry_log_YYYYMMDD.csv based on start_time
+    filename_date = start_time.strftime("%Y%m%d")
+    filename = f"telemetry_log_{filename_date}.csv"
+    
+    headers = {
+        "Content-Disposition": f'attachment; filename="{filename}"'
+    }
+    
+    return StreamingResponse(
+        csv_generator,
+        media_type="text/csv",
+        headers=headers
+    )
+
 
