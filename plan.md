@@ -24,20 +24,20 @@ Dokumen ini berisi langkah-langkah teknis mikro dari `issue.md` agar dapat dieks
 ## Tahap 2: Setup Database & SQLAlchemy Models
 
 ### Step 2.1: Inisialisasi Koneksi Database
-- [ ] Buat file `src/backend/app/db/session.py`.
-- [ ] Buat asinkron SQLAlchemy engine menggunakan `create_async_engine`.
-- [ ] Buat session factory menggunakan `async_sessionmaker`.
+- [x] Buat file `src/backend/app/db/session.py`.
+- [x] Buat asinkron SQLAlchemy engine menggunakan `create_async_engine`.
+- [x] Buat session factory menggunakan `async_sessionmaker`.
 
 ### Step 2.2: Pembuatan Base Model & Skrip Inisiasi
-- [ ] Buat file declarative base: `src/backend/app/models/base.py`.
-- [ ] Buat skrip `src/backend/app/db/init_db.py` untuk mengeksekusi `Base.metadata.create_all` saat *startup*.
+- [x] Buat file declarative base: `src/backend/app/models/base.py`.
+- [x] Buat skrip `src/backend/app/db/init_db.py` untuk mengeksekusi `Base.metadata.create_all` saat *startup*.
 
 ### Step 2.3: Pembuatan Tabel Data Telemetri & Kontrol
-- [ ] Buat file `src/backend/app/models/telemetry.py`.
-- [ ] Deklarasikan class model `TelemetryLog` dengan kolom PV, Battery, Inverter, Relay.
-- [ ] Tambahkan index pada kolom `timestamp` di `TelemetryLog`.
-- [ ] Buat file `src/backend/app/models/control.py`.
-- [ ] Deklarasikan class model `ControlLog` untuk riwayat aktuasi alat.
+- [x] Buat file `src/backend/app/models/telemetry.py`.
+- [x] Deklarasikan class model `TelemetryLog` dengan kolom PV, Battery, Inverter, Relay.
+- [x] Tambahkan index pada kolom `timestamp` di `TelemetryLog`.
+- [x] Buat file `src/backend/app/models/control.py`.
+- [x] Deklarasikan class model `ControlLog` untuk riwayat aktuasi alat.
 
 ---
 
