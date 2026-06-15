@@ -163,6 +163,34 @@ uv run python tests/dummy_publisher.py
         *   `start_time` (string, ISO Format, required)
         *   `end_time` (string, ISO Format, required)
 
+---
+
+## 📱 Flutter Application Integration
+
+For connecting and testing a Flutter application with this backend running on the same host machine, use the configuration guidelines below:
+
+### 1. Host Resolution & Parameters
+
+Depending on whether you are running the app on a physical device, Android emulator, or iOS simulator, the connection host URL will vary:
+
+| Client Platform | Backend URL Configuration | MQTT Broker Host | MQTT Port | MQTT Root Topic |
+| :--- | :--- | :--- | :--- | :--- |
+| **Android Emulator** | `http://10.0.2.2:8000` | `10.0.2.2` | `1883` | `laboratorium/scada/pv_kit` |
+| **iOS Simulator** | `http://localhost:8000` | `localhost` | `1883` | `laboratorium/scada/pv_kit` |
+| **Physical Device (WiFi)** | `http://<YOUR_LOCAL_IP>:8000` | `<YOUR_LOCAL_IP>` | `1883` | `laboratorium/scada/pv_kit` |
+
+> [!NOTE]
+> Android Emulator runs inside an isolated virtual machine. `127.0.0.1` refers to the emulator loopback interface itself. The host machine is mapped to the special alias **`10.0.2.2`**.
+
+### 2. MQTT Topic Structures
+The Flutter application should build full subscription and publish topics using the **MQTT Root Topic** variable combined with components:
+*   **Telemetry Subscription:** `<MQTT_ROOT_TOPIC>/telemetry` 
+    *   *(e.g., `laboratorium/scada/pv_kit/telemetry`)*
+*   **Relay Status Subscription:** `<MQTT_ROOT_TOPIC>/status/relay`
+    *   *(e.g., `laboratorium/scada/pv_kit/status/relay`)*
+
+---
+
 ## 📄 License
 
 This project is proprietary. All rights reserved.
