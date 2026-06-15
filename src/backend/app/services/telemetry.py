@@ -1,6 +1,6 @@
 import csv
 import io
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Sequence, AsyncGenerator
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -102,10 +102,14 @@ async def generate_telemetry_csv(
     result = await db.stream(query)
     async for row in result:
         log = row[0]
-        # Format Timestamp ISO format with Z suffix if UTC
-        ts_str = log.timestamp.isoformat()
+        ts = log.timestamp
+        if ts.tzinfo is None:
+            ts = ts.replace(tzinfo=timezone.utc)
+        ts_str = ts.isoformat()
         if ts_str.endswith("+00:00"):
             ts_str = ts_str[:-6] + "Z"
+        elif not ts_str.endswith("Z"):
+            ts_str += "Z"
         
         writer.writerow([
             ts_str,
