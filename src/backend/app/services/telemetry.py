@@ -1,3 +1,6 @@
+from datetime import datetime
+from typing import Sequence
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.backend.app.models.telemetry import TelemetryLog
 from src.backend.app.schemas.telemetry import TelemetryLogCreate
@@ -37,3 +40,32 @@ async def create_telemetry_log(db: AsyncSession, log_in: TelemetryLogCreate) -> 
     await db.commit()
     await db.refresh(db_log)
     return db_log
+
+
+async def get_telemetry_history(
+    db: AsyncSession,
+    start_time: datetime,
+    end_time: datetime,
+    downsample_limit: int = 500
+) -> Sequence[TelemetryLog]:
+    query = (
+        select(TelemetryLog)
+        .where(TelemetryLog.timestamp >= start_time)
+        .where(TelemetryLog.timestamp <= end_time)
+        .order_by(TelemetryLog.timestamp.asc())  # Order chronologically for charts
+    )
+    result = await db.execute(query)
+    logs = result.scalars().all()
+    
+    total_count = len(logs)
+    if total_count <= downsample_limit or downsample_limit <= 0:
+        return logs
+        
+    # Systematic downsampling: select every K-th element
+    step = total_count // downsample_limit
+    if step < 1:
+        step = 1
+        
+    downsampled_logs = [logs[i] for i in range(0, total_count, step)]
+    return downsampled_logs[:downsample_limit]
+

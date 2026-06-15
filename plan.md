@@ -68,9 +68,9 @@ Dokumen ini berisi langkah-langkah teknis mikro dari `issue.md` agar dapat dieks
 - [x] Buat fungsi service di `src/backend/app/services/telemetry.py` untuk menangani insert log data baru ke database.
 
 ### Step 4.3: Router Historis Telemetri (GET & Downsampling)
-- [ ] Implementasikan logic `GET /api/v1/telemetry` di dalam file router telemetri.
-- [ ] Tambahkan validasi *query params*: `start_time`, `end_time`, `component`.
-- [ ] Implementasikan logika algoritma kompresi data (*downsampling*) sederhana pada level *service* bila titik data melewati ambang batas.
+- [x] Implementasikan logic `GET /api/v1/telemetry` di dalam file router telemetri.
+- [x] Tambahkan validasi *query params*: `start_time`, `end_time`, `component`.
+- [x] Implementasikan logika algoritma kompresi data (*downsampling*) sederhana pada level *service* bila titik data melewati ambang batas.
 
 ### Step 4.4: Router Export Data (CSV)
 - [ ] Tambahkan logika endpoint `GET /api/v1/telemetry/export`.
