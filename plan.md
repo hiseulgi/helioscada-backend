@@ -10,9 +10,9 @@ Dokumen ini berisi langkah-langkah teknis mikro dari `issue.md` agar dapat dieks
 - [x] Buat struktur folder di dalam `app`: `api`, `core`, `db`, `models`, `schemas`, `services`.
 
 ### Step 1.2: Instalasi Dependencies & Konfigurasi Environment
-- [ ] Konfigurasikan `pyproject.toml` dengan dependencies utama: `fastapi`, `uvicorn`, `sqlalchemy`, `asyncpg`, `pydantic-settings`, `pydantic`, `paho-mqtt`.
-- [ ] Buat file `src/backend/app/core/config.py` yang mendefinisikan class `Settings` berbasis `pydantic-settings` untuk *load environment variables*.
-- [ ] Buat file `.env.example` yang mencakup variabel: `DATABASE_URL`, `MQTT_BROKER`, `MQTT_PORT`, dll.
+- [x] Konfigurasikan `pyproject.toml` dengan dependencies utama: `fastapi`, `uvicorn`, `sqlalchemy`, `asyncpg`, `pydantic-settings`, `pydantic`, `paho-mqtt`.
+- [x] Buat file `src/backend/app/core/config.py` yang mendefinisikan class `Settings` berbasis `pydantic-settings` untuk *load environment variables*.
+- [x] Buat file `.env.example` yang mencakup variabel: `DATABASE_URL`, `MQTT_BROKER`, `MQTT_PORT`, dll.
 
 ### Step 1.3: Setup Docker & External Services
 - [ ] Buat file konfigurasi broker MQTT: `mosquitto.conf` (izinkan koneksi anonim untuk keperluan lab lokal).
