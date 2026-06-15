@@ -85,17 +85,17 @@ Dokumen ini berisi langkah-langkah teknis mikro dari `issue.md` agar dapat dieks
 ## Tahap 5: Implementasi MQTT Bridge Daemon
 
 ### Step 5.1: Setup Kerangka Daemon
-- [ ] Buat file *main* untuk bridge: `src/backend/bridge/main.py`.
-- [ ] Inisialisasi struktur `paho-mqtt` atau `aiomqtt` client.
-- [ ] Konfigurasikan logika koneksi ke MQTT broker beserta fungsi *reconnect*.
+- [x] Buat file *main* untuk bridge: `src/backend/bridge/main.py`.
+- [x] Inisialisasi struktur `paho-mqtt` atau `aiomqtt` client.
+- [x] Konfigurasikan logika koneksi ke MQTT broker beserta fungsi *reconnect*.
 
 ### Step 5.2: Subscribe & Parsing Data
-- [ ] Definisikan fungsi logika *subscribe* ke topik `laboratorium/scada/pv_kit/telemetry`.
-- [ ] Implementasikan *callback* `on_message` untuk melakukan konversi/parsing format JSON dari payload ESP32.
+- [x] Definisikan fungsi logika *subscribe* ke topik `laboratorium/scada/pv_kit/telemetry`.
+- [x] Implementasikan *callback* `on_message` untuk melakukan konversi/parsing format JSON dari payload ESP32.
 
 ### Step 5.3: Sinkronisasi ke Database
-- [ ] Implementasikan pengiriman data yang di-parsing via HTTP POST ke endpoint `POST /api/v1/telemetry` FastAPI (menggunakan `httpx` asinkron).
-- [ ] Lakukan penanganan error dasar jika API sedang tidak dapat dijangkau.
+- [x] Implementasikan pengiriman data yang di-parsing via HTTP POST ke endpoint `POST /api/v1/telemetry` FastAPI (menggunakan `httpx` asinkron).
+- [x] Lakukan penanganan error dasar jika API sedang tidak dapat dijangkau.
 
 ---
 

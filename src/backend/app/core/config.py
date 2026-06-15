@@ -29,5 +29,8 @@ class Settings(BaseSettings):
         default="laboratorium/scada/pv_kit/status/relay"
     )
 
+    # Bridge API URL
+    API_URL: str = Field(default="http://localhost:8000/api/v1")
+
 
 settings = Settings()
