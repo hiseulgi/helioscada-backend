@@ -102,8 +102,8 @@ Dokumen ini berisi langkah-langkah teknis mikro dari `issue.md` agar dapat dieks
 ## Tahap 6: Testing & Finishing
 
 ### Step 6.1: Menyiapkan Alat Pengujian
-- [ ] Buat file skrip: `tests/dummy_publisher.py`.
-- [ ] Tulis logika *dummy loop* yang menerbitkan payload MQTT tiruan secara berkala untuk simulasi kit PV.
+- [x] Buat file skrip: `tests/dummy_publisher.py`.
+- [x] Tulis logika *dummy loop* yang menerbitkan payload MQTT tiruan secara berkala untuk simulasi kit PV.
 
 ### Step 6.2: Verifikasi Fungsionalitas Menyeluruh
 - [ ] *Up* seluruh layanan dengan perintah `docker compose up`.
