@@ -161,7 +161,8 @@ Alur lengkap dari mahasiswa masuk lab hingga menyelesaikan sesi praktikum:
   "timestamp": "2026-06-11T10:30:00",
   "pv": { "v": 18.4, "i": 2.1, "p": 38.6, "t": 52.3 },
   "battery": { "v": 12.6, "i": 1.8, "p": 22.7, "soc": 78.5, "t": 31.2 },
-  "inverter": { "v_ac": 220.1, "i_ac": 0.12, "p_ac": 26.4, "eff": 95.2 }
+  "inverter": { "v_ac": 220.1, "i_ac": 0.12, "p_ac": 26.4, "eff": 95.2 },
+  "relay": { "fan": false, "lamp": true }
 }
 ```
 

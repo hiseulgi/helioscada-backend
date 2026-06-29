@@ -37,7 +37,11 @@ CREATE TABLE telemetry_logs (
     inverter_voltage_ac NUMERIC(5, 2) NOT NULL, -- Volt AC (V), contoh: 220.10
     inverter_current_ac NUMERIC(5, 2) NOT NULL, -- Ampere AC (A), contoh: 0.12
     inverter_power_ac NUMERIC(6, 2) NOT NULL,   -- Watt AC (W), contoh: 26.40
-    inverter_efficiency NUMERIC(5, 2) NOT NULL  -- Persentase (%), contoh: 95.20
+    inverter_efficiency NUMERIC(5, 2) NOT NULL, -- Persentase (%), contoh: 95.20
+    
+    -- Status Relay (Aktuator)
+    relay_fan BOOLEAN NOT NULL DEFAULT FALSE,   -- TRUE = ON, FALSE = OFF
+    relay_lamp BOOLEAN NOT NULL DEFAULT FALSE   -- TRUE = ON, FALSE = OFF
 );
 
 -- Indeks untuk optimasi query berdasarkan range waktu (grafik & export CSV)
@@ -105,7 +109,8 @@ Selain itu, backend menerapkan kompresi data (*downsampling*) otomatis menggunak
           "timestamp": "2026-06-11T08:00:00Z",
           "pv": { "v": 18.4, "i": 2.1, "p": 38.6, "t": 52.3 },
           "battery": { "v": 12.6, "i": 1.8, "p": 22.7, "soc": 78.5, "soc_status": "Calibrated via Lookup Table", "t": 31.2 },
-          "inverter": { "v_ac": 220.1, "i_ac": 0.12, "p_ac": 26.4, "eff": 95.2 }
+          "inverter": { "v_ac": 220.1, "i_ac": 0.12, "p_ac": 26.4, "eff": 95.2 },
+          "relay": { "fan": false, "lamp": true }
         }
       ]
     }
@@ -154,9 +159,11 @@ Mengunduh file `.CSV` mentah untuk diolah mahasiswa di Excel.
     *   **Content-Type:** `text/csv`
     *   **Headers:** `Content-Disposition: attachment; filename="telemetry_log_20260611.csv"`
     *   **Body Content (Format File CSV):**
-        Timestamp,PV_Voltage,PV_Current,PV_Power,PV_Temp,BAT_Voltage,BAT_Current,BAT_Power,BAT_SoC,BAT_SoC_Status,BAT_Temp,INV_VoltageAC,INV_CurrentAC,INV_PowerAC,INV_Eff
-        2026-06-11T08:00:00Z,18.40,2.10,38.60,52.3,12.60,1.80,22.70,78.5,Calibrated via Lookup Table,31.2,220.10,0.12,26.40,95.20
-        2026-06-11T08:01:00Z,18.20,2.00,36.40,52.5,12.50,1.70,21.25,78.3,Coulomb Counting,31.3,219.80,0.12,26.30,94.80
+        ```csv
+        Timestamp,PV_Voltage,PV_Current,PV_Power,PV_Temp,BAT_Voltage,BAT_Current,BAT_Power,BAT_SoC,BAT_SoC_Status,BAT_Temp,INV_VoltageAC,INV_CurrentAC,INV_PowerAC,INV_Eff,Relay_Fan,Relay_Lamp
+        2026-06-11T08:00:00Z,18.40,2.10,38.60,52.3,12.60,1.80,22.70,78.5,Calibrated via Lookup Table,31.2,220.10,0.12,26.40,95.20,FALSE,TRUE
+        2026-06-11T08:01:00Z,18.20,2.00,36.40,52.5,12.50,1.70,21.25,78.3,Coulomb Counting,31.3,219.80,0.12,26.30,94.80,FALSE,TRUE
+        ```
 
 ---
 
@@ -170,7 +177,8 @@ Digunakan oleh skrip jembatan di PC Lab untuk memasukkan data yang disubscribe d
       "timestamp": "2026-06-11T08:00:00Z",
       "pv": { "v": 18.4, "i": 2.1, "p": 38.6, "t": 52.3 },
       "battery": { "v": 12.6, "i": 1.8, "p": 22.7, "soc": 78.5, "soc_status": "Calibrated via Lookup Table", "t": 31.2 },
-      "inverter": { "v_ac": 220.1, "i_ac": 0.12, "p_ac": 26.4, "eff": 95.2 }
+      "inverter": { "v_ac": 220.1, "i_ac": 0.12, "p_ac": 26.4, "eff": 95.2 },
+      "relay": { "fan": false, "lamp": true }
     }
     ```
 *   **Response (201 Created):**
@@ -179,30 +187,6 @@ Digunakan oleh skrip jembatan di PC Lab untuk memasukkan data yang disubscribe d
       "status": "success",
       "message": "Data telemetry logged successfully",
       "id": 104928
-    }
-    ```
-
----
-
-### E. Kirim Log Kontrol Relay (Dari MQTT Bridge Daemon ke Backend)
-Digunakan oleh skrip jembatan di PC Lab saat menerima pesan di topik `status/relay` untuk mencatat riwayat ke tabel `control_logs`.
-
-*   **Endpoint:** `POST /api/v1/control`
-*   **Request Body (JSON):**
-    ```json
-    {
-      "timestamp": "2026-06-11T15:05:02Z",
-      "device": "fan",
-      "action": "ON",
-      "status": "SUCCESS"
-    }
-    ```
-*   **Response (201 Created):**
-    ```json
-    {
-      "status": "success",
-      "message": "Control action logged successfully",
-      "id": 45
     }
     ```
 
@@ -249,6 +233,10 @@ laboratorium/scada/pv_kit/
         "i_ac": 0.12,
         "p_ac": 26.40,
         "eff": 95.20
+      },
+      "relay": {
+        "fan": false,
+        "lamp": true
       }
     }
     ```
