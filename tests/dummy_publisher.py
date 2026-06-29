@@ -9,56 +9,63 @@ from datetime import datetime, timezone
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 import paho.mqtt.client as mqtt
-
 from src.backend.app.core.config import settings
 
-# Load configuration from centralized settings
+# Program constants (topics and connection details)
 BROKER = settings.MQTT_BROKER
 PORT = settings.MQTT_PORT
 TOPIC_TELEMETRY = settings.MQTT_TOPIC_TELEMETRY
-TOPIC_RELAY = settings.MQTT_TOPIC_STATUS_RELAY
+TOPIC_STATUS_RELAY = settings.MQTT_TOPIC_STATUS_RELAY
 
-# Global simulated state
-relay_fan = False
-relay_lamp = False
-bat_soc = 75.0  # Initial State of Charge (%)
+# Control topics matching system specification
+TOPIC_CONTROL_FAN = "laboratorium/scada/pv_kit/control/fan"
+TOPIC_CONTROL_LAMP = "laboratorium/scada/pv_kit/control/lamp"
 
 
 def on_connect(client, userdata, flags, rc, properties=None):
     if rc == 0:
-        print(
-            f"Connected to MQTT Broker. Subscribing to relay control topic: {TOPIC_RELAY}"
-        )
-        client.subscribe(TOPIC_RELAY)
+        print(f"Connected to MQTT Broker. Subscribing to control topics:")
+        print(f" - {TOPIC_CONTROL_FAN}")
+        print(f" - {TOPIC_CONTROL_LAMP}")
+        client.subscribe(TOPIC_CONTROL_FAN)
+        client.subscribe(TOPIC_CONTROL_LAMP)
     else:
         print(f"Failed to connect to broker, return code: {rc}")
 
 
 def on_message(client, userdata, msg):
-    global relay_fan, relay_lamp
     try:
         payload = msg.payload.decode("utf-8")
-        print(
-            f"[{datetime.now().strftime('%H:%M:%S')}] Received relay control command: {payload}"
-        )
+        print(f"[{datetime.now().strftime('%H:%M:%S')}] Received control command on {msg.topic}: {payload}")
         data = json.loads(payload)
-
-        # Update global relay states if they are present in the command
-        if "fan" in data:
-            relay_fan = bool(data["fan"])
-        if "lamp" in data:
-            relay_lamp = bool(data["lamp"])
-
+        
+        state_changed = False
+        if msg.topic == TOPIC_CONTROL_FAN:
+            if "state" in data:
+                userdata["relay_fan"] = bool(data["state"])
+                state_changed = True
+        elif msg.topic == TOPIC_CONTROL_LAMP:
+            if "state" in data:
+                userdata["relay_lamp"] = bool(data["state"])
+                state_changed = True
+                
+        # If state changed, publish the new status to the status/relay topic (feedback loop)
+        if state_changed:
+            status_payload = {
+                "fan": userdata["relay_fan"],
+                "lamp": userdata["relay_lamp"],
+                "timestamp": datetime.now(timezone.utc).isoformat()
+            }
+            client.publish(TOPIC_STATUS_RELAY, json.dumps(status_payload))
+            print(f"[{datetime.now().strftime('%H:%M:%S')}] Published status update: {status_payload}")
+            
     except Exception as e:
-        print(f"Error handling relay command: {e}")
+        print(f"Error handling control command: {e}")
 
 
-def generate_telemetry():
-    global bat_soc, relay_fan, relay_lamp
-
+def generate_telemetry(state: dict) -> dict:
     # 1. PV Panel Simulation (dependent on simulated sun/randomness)
     pv_v = round(random.uniform(17.0, 21.0), 2)
-    # Give PV some current if it's daylight (simulated as always sunny for simplicity)
     pv_i = round(random.uniform(1.5, 3.5), 2)
     pv_p = round(pv_v * pv_i, 2)
     pv_t = round(random.uniform(40.0, 60.0), 1)
@@ -67,14 +74,14 @@ def generate_telemetry():
     inv_v = round(random.uniform(218.0, 222.0), 2)
     inv_eff = round(random.uniform(90.0, 95.0), 2)
 
-    # Calculate load power based on relay state
+    # Calculate load power based on state passed via arguments
     # Baseline load (inverter idle draw) = 5W
-    # Fan load = 25W, Lamp load = 40W
-    load_ac_power = 0.0
-    if relay_fan:
-        load_ac_power += 25.0
-    if relay_lamp:
-        load_ac_power += 10.0
+    # Fan load = 45W, Lamp load = 60W
+    load_ac_power = 5.0
+    if state["relay_fan"]:
+        load_ac_power += 45.0
+    if state["relay_lamp"]:
+        load_ac_power += 60.0
 
     inv_p = round(load_ac_power, 2)
     inv_i = round(inv_p / inv_v, 2)
@@ -90,8 +97,7 @@ def generate_telemetry():
     bat_i = round(bat_p_net / bat_v, 2)
 
     # Update state of charge (SoC) based on net battery current
-    # Charge/discharge rate factor adjusted for fast-paced simulation feedback
-    bat_soc = round(max(0.0, min(100.0, bat_soc + (bat_i * 0.05))), 2)
+    state["bat_soc"] = round(max(0.0, min(100.0, state["bat_soc"] + (bat_i * 0.05))), 2)
 
     # SoC status description
     bat_soc_status = (
@@ -108,7 +114,7 @@ def generate_telemetry():
             "v": bat_v,
             "i": bat_i,
             "p": bat_p,
-            "soc": bat_soc,
+            "soc": state["bat_soc"],
             "soc_status": bat_soc_status,
             "t": bat_t,
         },
@@ -117,8 +123,15 @@ def generate_telemetry():
 
 
 def main():
-    # Paho MQTT v2 initialization
-    client = mqtt.Client(callback_api_version=mqtt.CallbackAPIVersion.VERSION2)
+    # State dict to store simulation variables (no global keywords used)
+    state = {
+        "relay_fan": False,
+        "relay_lamp": False,
+        "bat_soc": 75.0
+    }
+
+    # Paho MQTT v2 initialization - passing state as userdata
+    client = mqtt.Client(callback_api_version=mqtt.CallbackAPIVersion.VERSION2, userdata=state)
     client.on_connect = on_connect
     client.on_message = on_message
 
@@ -130,15 +143,13 @@ def main():
         return
 
     client.loop_start()
-    print(
-        "Simulation started. Publishing mock data every 2 seconds. Press Ctrl+C to stop.\n"
-    )
+    print("Simulation started. Publishing mock telemetry every 2 seconds. Press Ctrl+C to stop.\n")
 
     try:
         while True:
-            data = generate_telemetry()
+            data = generate_telemetry(state)
             payload = json.dumps(data)
-            print(f"[{datetime.now().strftime('%H:%M:%S')}] Publishing: {payload}")
+            print(f"[{datetime.now().strftime('%H:%M:%S')}] Publishing telemetry: {payload}")
             client.publish(TOPIC_TELEMETRY, payload)
             time.sleep(2)
     except KeyboardInterrupt:
