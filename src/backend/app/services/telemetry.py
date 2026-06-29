@@ -32,10 +32,6 @@ async def create_telemetry_log(db: AsyncSession, log_in: TelemetryLogCreate) -> 
         inverter_current_ac=log_in.inverter.i_ac,
         inverter_power_ac=log_in.inverter.p_ac,
         inverter_efficiency=log_in.inverter.eff,
-        
-        # Relay Actuator Statuses
-        relay_fan=log_in.relay.fan,
-        relay_lamp=log_in.relay.lamp,
     )
     
     db.add(db_log)
@@ -87,8 +83,7 @@ async def generate_telemetry_csv(
     headers = [
         "Timestamp", "PV_Voltage", "PV_Current", "PV_Power", "PV_Temp",
         "BAT_Voltage", "BAT_Current", "BAT_Power", "BAT_SoC", "BAT_SoC_Status", "BAT_Temp",
-        "INV_VoltageAC", "INV_CurrentAC", "INV_PowerAC", "INV_Eff",
-        "Relay_Fan", "Relay_Lamp"
+        "INV_VoltageAC", "INV_CurrentAC", "INV_PowerAC", "INV_Eff"
     ]
 
     output = io.StringIO()
@@ -126,9 +121,7 @@ async def generate_telemetry_csv(
             f"{log.inverter_voltage_ac:.2f}",
             f"{log.inverter_current_ac:.2f}",
             f"{log.inverter_power_ac:.2f}",
-            f"{log.inverter_efficiency:.2f}",
-            "TRUE" if log.relay_fan else "FALSE",
-            "TRUE" if log.relay_lamp else "FALSE"
+            f"{log.inverter_efficiency:.2f}"
         ])
         yield output.getvalue()
         output.seek(0)

@@ -26,9 +26,7 @@ class InverterData(BaseModel):
     eff: float = Field(..., description="Inverter efficiency in percentage (%)", ge=0.0, le=100.0)
 
 
-class RelayData(BaseModel):
-    fan: bool = Field(..., description="Cooling fan actuator relay status (True=ON, False=OFF)")
-    lamp: bool = Field(..., description="Load light bulb actuator relay status (True=ON, False=OFF)")
+
 
 
 class TelemetryLogCreate(BaseModel):
@@ -36,7 +34,6 @@ class TelemetryLogCreate(BaseModel):
     pv: PVData
     battery: BatteryData
     inverter: InverterData
-    relay: RelayData
 
 
 class TelemetryLogResponse(BaseModel):
@@ -46,7 +43,6 @@ class TelemetryLogResponse(BaseModel):
     pv: Optional[PVData] = None
     battery: Optional[BatteryData] = None
     inverter: Optional[InverterData] = None
-    relay: Optional[RelayData] = None
 
     @classmethod
     def from_orm_model(cls, db_model, component: Literal["pv", "battery", "inverter", "all"] = "all") -> "TelemetryLogResponse":
@@ -73,17 +69,11 @@ class TelemetryLogResponse(BaseModel):
             eff=float(db_model.inverter_efficiency)
         ) if component in ("inverter", "all") else None
 
-        relay_data = RelayData(
-            fan=db_model.relay_fan,
-            lamp=db_model.relay_lamp
-        ) if component == "all" else None
-
         return cls(
             timestamp=db_model.timestamp,
             pv=pv_data,
             battery=battery_data,
-            inverter=inverter_data,
-            relay=relay_data
+            inverter=inverter_data
         )
 
 

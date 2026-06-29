@@ -30,11 +30,7 @@ async def seed_telemetry_logs(db_session, count: int) -> list[TelemetryLog]:
             inverter_voltage_ac=220.0,
             inverter_current_ac=0.1,
             inverter_power_ac=22.0,
-            inverter_efficiency=95.0,
-            
-            # Relay
-            relay_fan=False,
-            relay_lamp=True
+            inverter_efficiency=95.0
         )
         db_session.add(log)
         logs.append(log)
@@ -67,7 +63,6 @@ async def test_get_history_success(test_client: httpx.AsyncClient, db_session):
     assert "pv" in first_record
     assert "battery" in first_record
     assert "inverter" in first_record
-    assert "relay" in first_record
 
 
 async def test_get_history_dynamic_filtering(test_client: httpx.AsyncClient, db_session):

@@ -20,13 +20,17 @@ logger = logging.getLogger("mqtt_bridge")
 message_queue = asyncio.Queue()
 main_loop = None
 
+# Global state to track relay changes and avoid duplicate logs
+last_relay_state = {"fan": None, "lamp": None}
+
 
 def on_connect(client, userdata, flags, rc, properties=None):
     if rc == 0:
         logger.info(f"Successfully connected to MQTT Broker at {settings.MQTT_BROKER}:{settings.MQTT_PORT}")
         # Subscribe to telemetry topic upon successful connection
         client.subscribe(settings.MQTT_TOPIC_TELEMETRY)
-        logger.info(f"Subscribed to topic: {settings.MQTT_TOPIC_TELEMETRY}")
+        client.subscribe(settings.MQTT_TOPIC_STATUS_RELAY)
+        logger.info(f"Subscribed to topics: {settings.MQTT_TOPIC_TELEMETRY}, {settings.MQTT_TOPIC_STATUS_RELAY}")
     else:
         logger.error(f"Failed to connect to MQTT Broker, return code: {rc}")
 
@@ -42,28 +46,55 @@ def on_message(client, userdata, msg):
         
         # Schedule queue insert on the main asyncio event loop from the MQTT thread
         if main_loop and not main_loop.is_closed():
-            main_loop.call_soon_threadsafe(message_queue.put_nowait, payload)
+            main_loop.call_soon_threadsafe(message_queue.put_nowait, (msg.topic, payload))
     except Exception as e:
         logger.error(f"Error handling incoming MQTT message: {e}")
 
 
 async def process_queue(http_client: httpx.AsyncClient):
+    global last_relay_state
     logger.info("Queue processor task started.")
     while True:
-        payload = await message_queue.get()
+        topic, payload = await message_queue.get()
         try:
             # Parse payload to ensure it is valid JSON
             data = json.loads(payload)
-            logger.info("Forwarding telemetry payload to API...")
             
-            # Send HTTP POST request to API telemetry endpoint
-            url = f"{settings.API_URL}/telemetry"
-            response = await http_client.post(url, json=data, timeout=5.0)
-            
-            if response.status_code == 201:
-                logger.info(f"Telemetry successfully written to DB via API. Log ID: {response.json().get('id')}")
-            else:
-                logger.error(f"API returned error code {response.status_code}: {response.text}")
+            if topic == settings.MQTT_TOPIC_TELEMETRY:
+                logger.info("Forwarding telemetry payload to API...")
+                url = f"{settings.API_URL}/telemetry"
+                response = await http_client.post(url, json=data, timeout=5.0)
+                
+                if response.status_code == 201:
+                    logger.info(f"Telemetry successfully written to DB via API. Log ID: {response.json().get('id')}")
+                else:
+                    logger.error(f"API returned error code {response.status_code}: {response.text}")
+                    
+            elif topic == settings.MQTT_TOPIC_STATUS_RELAY:
+                timestamp = data.get("timestamp")
+                for device in ["fan", "lamp"]:
+                    if device in data:
+                        current_state = data[device]
+                        # Only log if the state actually changed
+                        if last_relay_state[device] != current_state:
+                            # If it's the very first time we get state, just sync without logging it as a user action
+                            if last_relay_state[device] is not None:
+                                control_payload = {
+                                    "timestamp": timestamp,
+                                    "device": device,
+                                    "action": "ON" if current_state else "OFF",
+                                    "status": "SUCCESS"
+                                }
+                                logger.info(f"Forwarding control action payload to API for {device}...")
+                                url = f"{settings.API_URL}/control"
+                                response = await http_client.post(url, json=control_payload, timeout=5.0)
+                                if response.status_code == 201:
+                                    logger.info(f"Control action logged via API. Log ID: {response.json().get('id')}")
+                                else:
+                                    logger.error(f"API returned error code {response.status_code}: {response.text}")
+                            
+                            # Update the internal state tracker
+                            last_relay_state[device] = current_state
         except json.JSONDecodeError:
             logger.error(f"Received invalid JSON format on MQTT broker: {payload}")
         except httpx.RequestError as exc:

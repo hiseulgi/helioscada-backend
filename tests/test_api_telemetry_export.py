@@ -21,9 +21,7 @@ async def seed_single_telemetry(db_session) -> TelemetryLog:
         inverter_voltage_ac=220.10,
         inverter_current_ac=0.12,
         inverter_power_ac=26.40,
-        inverter_efficiency=95.20,
-        relay_fan=False,
-        relay_lamp=True
+        inverter_efficiency=95.20
     )
     db_session.add(log)
     await db_session.commit()
@@ -54,8 +52,6 @@ async def test_export_csv_success(test_client: httpx.AsyncClient, db_session):
     headers = lines[0].split(",")
     assert headers[0] == "Timestamp"
     assert headers[5] == "BAT_Voltage"
-    assert headers[15] == "Relay_Fan"
-    assert headers[16] == "Relay_Lamp"
     
     # Check data formatting
     data_row = lines[1].split(",")
@@ -64,8 +60,6 @@ async def test_export_csv_success(test_client: httpx.AsyncClient, db_session):
     assert data_row[2] == "2.10"
     assert data_row[8] == "78.50"
     assert data_row[9] == "Calibrated via Lookup Table"
-    assert data_row[15] == "FALSE"  # Boolean fan mapped to FALSE
-    assert data_row[16] == "TRUE"   # Boolean lamp mapped to TRUE
 
 
 async def test_export_csv_missing_params(test_client: httpx.AsyncClient):

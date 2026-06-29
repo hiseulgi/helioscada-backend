@@ -137,3 +137,24 @@ Dokumen ini berisi langkah-langkah teknis mikro dari `issue.md` agar dapat dieks
 
 ### Step 6.4: Dokumentasi
 - [x] Perbarui `README.md` repositori backend dengan panduan eksekusi `uv run` & `docker compose`.
+
+---
+
+## Tahap 7: Revisi Arsitektur MVP (Pemisahan Kontrol & Telemetri)
+
+### Step 7.1: Pembaruan Model dan Skema (Penghapusan Relay)
+- [x] Hapus kolom terkait relay pada `src/backend/app/models/telemetry.py`.
+- [x] Hapus atribut relay pada `src/backend/app/schemas/telemetry.py`.
+- [x] Hapus logika *export CSV* relay di `src/backend/app/services/telemetry.py`.
+
+### Step 7.2: Implementasi Endpoint Logging Kontrol
+- [x] Buat skema `src/backend/app/schemas/control.py`.
+- [x] Buat *service* `src/backend/app/services/control.py` untuk `ControlLog`.
+- [x] Buat router `src/backend/app/api/routers/control.py` untuk endpoint `POST /api/v1/control`.
+- [x] Daftarkan router di `src/backend/app/main.py`.
+
+### Step 7.3: Penyesuaian Komponen MQTT dan Testing
+- [x] Perbarui `src/backend/bridge/main.py` untuk menangkap topik `status/relay` dan meneruskannya ke `/api/v1/control`.
+- [x] Hapus kembalian payload `relay` di `tests/dummy_publisher.py` (namun tetap pertahankan fungsi `on_message` untuk kalkulasi SoC/baterai).
+- [x] Perbarui *mock payloads* pada `tests/test_api_telemetry_*.py`.
+- [x] Buat unit testing `tests/test_api_control.py` untuk menguji endpoint log kontrol.

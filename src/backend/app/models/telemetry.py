@@ -35,9 +35,7 @@ class TelemetryLog(Base):
     inverter_power_ac: Mapped[Decimal] = mapped_column(Numeric(6, 2), nullable=False)
     inverter_efficiency: Mapped[Decimal] = mapped_column(Numeric(5, 2), nullable=False)
 
-    # Actuator Relay Parameters
-    relay_fan: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
-    relay_lamp: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+
 
 
 # Explicit index for timestamp descending for optimized time-series queries

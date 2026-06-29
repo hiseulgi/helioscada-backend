@@ -113,7 +113,6 @@ def generate_telemetry():
             "t": bat_t,
         },
         "inverter": {"v_ac": inv_v, "i_ac": inv_i, "p_ac": inv_p, "eff": inv_eff},
-        "relay": {"fan": relay_fan, "lamp": relay_lamp},
     }
 
 

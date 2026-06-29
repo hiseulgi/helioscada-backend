@@ -1,0 +1,1 @@
+PYTHONPATH=. uv run pytest --cov=src

@@ -14,8 +14,7 @@ VALID_PAYLOAD = {
         "soc_status": "Calibrated via Lookup Table",
         "t": 31.2
     },
-    "inverter": {"v_ac": 220.1, "i_ac": 0.12, "p_ac": 26.4, "eff": 95.2},
-    "relay": {"fan": False, "lamp": True}
+    "inverter": {"v_ac": 220.1, "i_ac": 0.12, "p_ac": 26.4, "eff": 95.2}
 }
 
 
@@ -39,8 +38,6 @@ async def test_post_telemetry_success_full(test_client: httpx.AsyncClient, db_se
     assert float(db_log.battery_soc) == 78.5
     assert db_log.battery_soc_status == "Calibrated via Lookup Table"
     assert float(db_log.inverter_voltage_ac) == 220.1
-    assert db_log.relay_fan is False
-    assert db_log.relay_lamp is True
 
 
 async def test_post_telemetry_success_no_timestamp(test_client: httpx.AsyncClient, db_session):

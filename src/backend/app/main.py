@@ -1,7 +1,7 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from src.backend.app.api.routers import health, telemetry
+from src.backend.app.api.routers import health, telemetry, control
 from src.backend.app.db.init_db import init_db
 from src.backend.app.core.config import settings
 
@@ -34,3 +34,4 @@ app.add_middleware(
 # Register routers with their respective prefixes and tags
 app.include_router(health.router, tags=["Health"])
 app.include_router(telemetry.router, prefix="/api/v1", tags=["Telemetry"])
+app.include_router(control.router, prefix="/api/v1", tags=["Control"])
